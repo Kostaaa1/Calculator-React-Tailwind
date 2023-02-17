@@ -10,46 +10,64 @@ function App() {
     const [operation, setOperation] = useState("");
 
     const number = (e) => {
-        if (
-            !e.target.className.includes("operation") ||
-            e.target.innerText === "-"
-        ) {
-            setCurrentOperand(currentOperand + e.target.innerText);
-        } else {
-            setPreviousOperand(currentOperand + " " + e.target.innerText);
+        const value = e.target.innerText;
+        const { className } = e.target;
+
+        if (currentOperand.length >= 12) {
+            return alert("You can enter only 12-digit number!");
+        }
+
+        if (parseFloat(value) || ["-", "0"].includes(value)) {
+            if (value === "-" && currentOperand === "-") return;
+
+            setCurrentOperand(currentOperand + value);
+        }
+
+        if (className.includes("operation")) {
+            if (!currentOperand || currentOperand === "-") return;
+
+            setPreviousOperand(`${currentOperand} ${value}`);
             setCurrentOperand("");
-            setOperation(e.target.innerText);
+            setOperation(value);
         }
     };
 
     const compute = () => {
-        let sum = 0;
+        let computedValue = "";
+        if (previousOperand === operation) return;
+        if (!currentOperand || currentOperand === "-") return;
 
-        switch (operation) {
-            case "+":
-                sum = parseInt(previousOperand) + parseInt(previousOperand);
-                break;
-            case "-":
-                sum = parseInt(previousOperand) - parseInt(previousOperand);
-                break;
-            case "x":
-                sum = parseInt(previousOperand) * parseInt(previousOperand);
-                break;
-            case "÷":
-                sum = parseInt(previousOperand) / parseInt(previousOperand);
-                break;
-        }
+        const cases = {
+            "+": parseFloat(previousOperand) + parseFloat(currentOperand),
+            "-": parseFloat(previousOperand) - parseFloat(currentOperand),
+            x: parseFloat(previousOperand) * parseFloat(currentOperand),
+            "÷": parseFloat(previousOperand) / parseFloat(currentOperand),
+        };
+
+        computedValue = cases[operation].toString();
 
         setPreviousOperand("");
-        setCurrentOperand(sum.toString());
+        setOperation("");
+        setCurrentOperand(
+            computedValue.split("").includes(".")
+                ? cases[operation].toFixed(6).toString()
+                : computedValue
+        );
     };
 
     const clear = () => {
         setPreviousOperand("");
         setCurrentOperand("");
     };
+
+    const deleteLast = () => {
+        setCurrentOperand(currentOperand.slice(0, -1));
+    };
+
+    // fixed right-0 top-0 w-full h-full before:content-['*'] before:absolute before:left-0 before:top-0 before:w-full before:h-screen before:backdrop-saturate-[2] before:bg-gradient-to-r from-slate-500 to-slate-800
+
     return (
-        <>
+        <div>
             <Section>
                 <video width="320" height="240" autoPlay loop muted>
                     <source
@@ -59,165 +77,125 @@ function App() {
                     Your browser does not support the video tag.
                 </video>
             </Section>
-            <Container>
-                {/* <div className="wrap"> */}
-                <div className="screen-wrap">
-                    <div className="screen">
-                        <h3>{previousOperand}</h3>
-                        <h1>{currentOperand === "" ? 0 : currentOperand}</h1>
+            <div className="absolute w-[420px] h-[650px] top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 bg-white/[36%] flex flex-col overflow-hidden text-2xl font-medium rounded-[14px] backdrop-blur-lg">
+                <div className="relative mx-auto px-[35px] py-[35px] w-full h-full">
+                    <div className="relative flex items-end flex-col bg-white h-[170px] p-[25px] overflow-hidden">
+                        <h3 className="absolute top-[20%] text-3xl ">
+                            {previousOperand}
+                        </h3>
+                        <h1 className="absolute bottom-[20%] text-4xl">
+                            {currentOperand}
+                        </h1>
                     </div>
                 </div>
-                <div className="grid">
-                    <div onClick={clear} className="button item-0">
+                <div className="absolute h-[70%] w-full bottom-0 grid grid-rows-5 grid-cols-4 justify-center gap-[20px] p-[35px]">
+                    <div
+                        onClick={clear}
+                        className="flex justify-center bg-white w-full items-center row-start-1 row-end-2 col-start-1 col-end-3 "
+                    >
                         C
                     </div>
-                    <div onClick={number} className="button">
+                    <div
+                        onClick={deleteLast}
+                        className="flex justify-center bg-white w-full items-center "
+                    >
                         <FiDelete />
                     </div>
-                    <div onClick={number} className="button operation">
+                    <div
+                        onClick={number}
+                        className="flex justify-center w-full items-center bg-[#e05353] operation text-white"
+                    >
                         ÷
                     </div>
-                    <div onClick={number} className="button">
+                    <div
+                        onClick={number}
+                        className="flex justify-center bg-white w-full items-center "
+                    >
                         7
                     </div>
-                    <div onClick={number} className="button">
+                    <div
+                        onClick={number}
+                        className="flex justify-center bg-white w-full items-center "
+                    >
                         8
                     </div>
-                    <div onClick={number} className="button">
+                    <div
+                        onClick={number}
+                        className="flex justify-center bg-white w-full items-center "
+                    >
                         9
                     </div>
-                    <div onClick={number} className="button operation">
+                    <div
+                        onClick={number}
+                        className="flex justify-center w-full items-center bg-[#e05353] operation text-white"
+                    >
                         x
                     </div>
-                    <div onClick={number} className="button">
+                    <div
+                        onClick={number}
+                        className="flex justify-center bg-white w-full items-center "
+                    >
                         4
                     </div>
-                    <div onClick={number} className="button">
+                    <div
+                        onClick={number}
+                        className="flex justify-center bg-white w-full items-center "
+                    >
                         5
                     </div>
-                    <div onClick={number} className="button">
+                    <div
+                        onClick={number}
+                        className="flex justify-center bg-white w-full items-center "
+                    >
                         6
                     </div>
-                    <div onClick={number} className="button operation">
+                    <div
+                        onClick={number}
+                        className="flex justify-center  w-full items-center bg-[#e05353] operation text-white"
+                    >
                         +
                     </div>
-                    <div onClick={number} className="button">
+                    <div
+                        onClick={number}
+                        className="flex justify-center bg-white w-full items-center "
+                    >
                         1
                     </div>
-                    <div onClick={number} className="button">
+                    <div
+                        onClick={number}
+                        className="flex justify-center bg-white w-full items-center "
+                    >
                         2
                     </div>
-                    <div onClick={number} className="button">
+                    <div
+                        onClick={number}
+                        className="flex justify-center bg-white w-full items-center "
+                    >
                         3
                     </div>
-                    <div onClick={number} className="button item-1">
+                    <div
+                        onClick={number}
+                        className="flex justify-center bg-white w-full items-center row-start-5 row-end-6 col-start-1 col-end-4"
+                    >
                         0
                     </div>
-                    <div onClick={number} className="button operation">
+                    <div
+                        onClick={number}
+                        className="flex justify-center  w-full items-center bg-[#e05353] operation text-white"
+                    >
                         -
                     </div>
-                    <div onClick={compute} className="button operation">
+                    <div
+                        onClick={compute}
+                        className="flex justify-center  w-full items-center bg-[#e05353] operation text-white"
+                    >
                         =
                     </div>
                 </div>
-                {/* </div> */}
-            </Container>
-        </>
+            </div>
+        </div>
     );
 }
-
-const Container = styled.section`
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgb(255 255 255 / 31%);
-    width: 420px;
-    height: 650px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-radius: 14px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    font-size: 25px;
-    font-weight: 500;
-
-    .screen-wrap {
-        position: relative;
-        margin: 0 auto;
-        width: 100%;
-        height: 100%;
-        padding: 35px;
-
-        .screen {
-            display: flex;
-            align-items: flex-end;
-            flex-direction: column;
-            background-color: white;
-            height: 170px;
-            padding: 25px;
-            position: relative;
-
-            h1 {
-                font-size: 2.5rem;
-                position: absolute;
-                bottom: 10%;
-            }
-
-            h3 {
-                font-size: 1.6rem;
-                position: absolute;
-                top: 20%;
-                color: #524e4e;
-            }
-        }
-    }
-
-    .grid {
-        position: absolute;
-        height: 70%;
-        width: 100%;
-        bottom: 0;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
-        justify-items: center;
-        gap: 20px;
-        padding: 35px;
-        display: grid;
-
-        .button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            background-color: white;
-            width: 100%;
-        }
-
-        .item-0 {
-            grid-row-start: 1;
-            grid-column-start: 1;
-
-            grid-row-end: 2;
-            grid-column-end: 3;
-        }
-
-        .item-1 {
-            grid-row-start: 5;
-            grid-column-start: 1;
-
-            grid-row-end: 6;
-            grid-column-end: 4;
-        }
-
-        .operation {
-            background-color: #e05353;
-            color: white;
-        }
-    }
-`;
 
 const Section = styled.div`
     position: fixed;
@@ -234,9 +212,9 @@ const Section = styled.div`
         width: 100%;
         height: 100vh;
         background: linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.72) 0%,
-            rgb(255 255 255 / 25%) 100%
+            160deg,
+            rgba(255, 255, 255, 0.7) 0%,
+            rgb(255 255 255 /55%) 10%
         );
         backdrop-filter: saturate(3);
     }

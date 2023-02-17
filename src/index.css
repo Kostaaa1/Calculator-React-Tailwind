@@ -25,6 +25,7 @@ video {
 
 body {
     min-height: 100vh;
+    user-select: none;
 }
 
 h1 {
